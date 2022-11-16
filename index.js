@@ -37,19 +37,21 @@ function validURL(str) {
     return !!pattern.test(str);
 }
 
-app.get('/quizlet', async (req, res) => {
+app.get('/:id', async (req, res) => {
     console.log(req.params)
 
     try {
-        let id = decodeURIComponent(req.query.id);
+        let id = decodeURIComponent(req.params.id);
 
         if(validURL(id)) {
             id = id.match('\/([0-9]+)\/')[1];
         }
 
         const results = await getFullQuizz(id);
+
+        console.log(results)
+
         const items = results.responses[0].models.studiableItem
-        // return res.json(results.responses);
         return res.render('index', { items })
     } catch (err) {
         console.log(err);
