@@ -14,10 +14,7 @@ const cf = new CloudflareBypasser();
 const getPaging = (id) => {
     const URL = `https://quizlet.com/webapi/3.4/studiable-item-documents?filters%5BstudiableContainerId%5D=${id}&filters%5BstudiableContainerType%5D=1&perPage=555&page=1`;
     return cf.request(URL)
-        .then(res => {
-            console.log('page', res.body)
-            return JSON.parse(res.body).responses
-        });
+        .then(res => JSON.parse(res.body).responses);
 }
 
 const getFullQuizz = async (id) => {
@@ -26,10 +23,7 @@ const getFullQuizz = async (id) => {
         .then(total => {
             const URL = `https://quizlet.com/webapi/3.4/studiable-item-documents?filters%5BstudiableContainerId%5D=${id}&filters%5BstudiableContainerType%5D=1&perPage=${total}&page=1`;
             return cf.request(URL)
-                .then(res => {
-                    console.log('full', res.body)
-                    return JSON.parse(res.body);
-                });
+                .then(res => JSON.parse(res.body));
         })
 }
 
