@@ -37,15 +37,15 @@ function validURL(str) {
     return !!pattern.test(str);
 }
 
-app.get('/', async (req, res) => {
+app.get('/quizlet', async (req, res) => {
+    console.log(req.params)
+
     try {
         let id = decodeURIComponent(req.query.id);
 
         if(validURL(id)) {
             id = id.match('\/([0-9]+)\/')[1];
         }
-
-        console.log(id)
 
         const results = await getFullQuizz(id);
         const items = results.responses[0].models.studiableItem
