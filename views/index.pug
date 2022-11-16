@@ -1,0 +1,14 @@
+html
+    head
+        script(src='script.js' defer)
+        style 
+            include style.css
+    body
+        table
+            tr
+                input
+            each item in items
+                tr(item)
+                    each side in item.cardSides
+                        each media in side.media
+                            td= media.plainText
