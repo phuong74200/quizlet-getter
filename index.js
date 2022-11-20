@@ -6,18 +6,16 @@ app.use(express.static('public'));
 
 app.set('view engine', 'pug');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 7420;
 
 const cloudscraper = require('cloudscraper');
 
 const getPaging = (id) => {
     const URL = `https://quizlet.com/webapi/3.4/studiable-item-documents?filters%5BstudiableContainerId%5D=${id}&filters%5BstudiableContainerType%5D=1&perPage=555&page=1`;
     return cloudscraper({
-        url: URL,
-        method: 'GET',
+        uri: URL,
         headers: {
-            'proxy': 'http://localproxy.com',
-            'User-Agent': 'Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0',
         }
     })
 }
@@ -42,22 +40,6 @@ function validURL(str) {
     return !!pattern.test(str);
 }
 
-async function quizlet(id){
-    let res = await fetch(`https://quizlet.com/webapi/3.4/studiable-item-documents?filters%5BstudiableContainerId%5D=${id}&filters%5BstudiableContainerType%5D=1&perPage=5&page=1`).then(res => res.json())
-    let currentLength = 5;
-    let token = res.responses[0].paging.token
-    let terms = res.responses[0].models.studiableItem;
-    let page = 2;
-    console.log({token, terms})
-    while (currentLength >= 5){
-        let res = await fetch(`https://quizlet.com/webapi/3.4/studiable-item-documents?filters%5BstudiableContainerId%5D=${id}&filters%5BstudiableContainerType%5D=1&perPage=5&page=${page++}&pagingToken=${token}`).then(res => res.json());
-        terms.push(...res.responses[0].models.studiableItem);
-        currentLength = res.responses[0].models.studiableItem.length;
-        token = res.responses[0].paging.token;
-    }
-    return terms;
-}
-
 app.get('/:id', async (req, res) => {
     try {
         let id = decodeURIComponent(req.params.id);
@@ -70,7 +52,7 @@ app.get('/:id', async (req, res) => {
 
         const items = results.responses[0].models.studiableItem
         // return res.render('index', { items })
-        res.json(await quizlet(id))
+        res.json(await getPaging(id))
     } catch (err) {
         // console.log(err);
         return res.json({
