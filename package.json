@@ -3,6 +3,8 @@
     "cloudflare-bypasser": "^0.0.3",
     "cloudscraper": "^4.6.0",
     "express": "^4.18.2",
+    "got": "^12.5.3",
+    "hooman": "^1.2.6",
     "pug": "^3.0.2"
   },
   "scripts": {
