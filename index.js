@@ -10,12 +10,18 @@ const PORT = process.env.PORT || 7420;
 
 const cloudscraper = require('cloudscraper');
 
+const CloudflareBypasser = require('cloudflare-bypasser');
+
+let cf = new CloudflareBypasser();
+
 const getPaging = (id) => {
     const URL = `https://quizlet.com/webapi/3.4/studiable-item-documents?filters%5BstudiableContainerId%5D=${id}&filters%5BstudiableContainerType%5D=1&perPage=555&page=1`;
-    return cloudscraper({
-        uri: URL,
+    return cf.request({
+        url: URL,
+        //  'User-Agent': 'Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0',
         headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0',
+            // 'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 7_0_4 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11B554a Safari/9537.53',
+            // host: 'fuong.quizlet.com'
         }
     })
 }
@@ -48,9 +54,9 @@ app.get('/:id', async (req, res) => {
             id = id.match('\/([0-9]+)\/')[1];
         }
 
-        const results = await getPaging(id).then(res => JSON.parse(res));
+        const results = await getPaging(id) //.then(res => JSON.parse(res.body));
 
-        const items = results.responses[0].models.studiableItem
+        // const items = results.responses[0].models.studiableItem
         // return res.render('index', { items })
         res.json(await getPaging(id))
     } catch (err) {
@@ -58,7 +64,7 @@ app.get('/:id', async (req, res) => {
         return res.json({
             code: 500,
             message: 'id not found',
-            err: err
+            err: err.message
         });
     }
 });
