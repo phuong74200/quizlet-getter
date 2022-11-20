@@ -6,14 +6,20 @@ app.use(express.static('public'));
 
 app.set('view engine', 'pug');
 
-const PORT = process.env.PORT || 7420;
+const PORT = process.env.PORT || 3000;
 
 const cloudscraper = require('cloudscraper');
 
 const getPaging = (id) => {
     const URL = `https://quizlet.com/webapi/3.4/studiable-item-documents?filters%5BstudiableContainerId%5D=${id}&filters%5BstudiableContainerType%5D=1&perPage=555&page=1`;
-    return cloudscraper.get(URL)
-        .then(res => JSON.parse(res));
+    return cloudscraper({
+        url: URL,
+        method: 'GET',
+        headers: {
+            'proxy': 'http://localproxy.com',
+            'User-Agent': 'Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36',
+        }
+    })
 }
 
 const getFullQuizz = async (id) => {
@@ -44,19 +50,17 @@ app.get('/:id', async (req, res) => {
             id = id.match('\/([0-9]+)\/')[1];
         }
 
-        const results = await getPaging(id);
-
-        console.log(results)
+        const results = await getPaging(id).then(res => JSON.parse(res));
 
         const items = results.responses[0].models.studiableItem
-        return res.render('index', { items })
-        // res.json(await getPaging(id))
+        // return res.render('index', { items })
+        res.json(await getPaging(id))
     } catch (err) {
         // console.log(err);
         return res.json({
             code: 500,
             message: 'id not found',
-            err: err.message
+            err: err
         });
     }
 });
