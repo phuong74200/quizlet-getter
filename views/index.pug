@@ -1,5 +1,6 @@
 html
     head
+        //- script(src='https://cdn.jsdelivr.net/gh/nextapps-de/flexsearch@0.7.31/dist/flexsearch.bundle.js' defer)
         script(src='script.js' defer)
         style 
             include style.css
@@ -8,7 +9,6 @@ html
             tr
                 input
             each item in items
-                tr(item)
-                    each side in item.cardSides
-                        each media in side.media
-                            td= media.plainText
+                tr(item=item.mediaId)
+                    each media in item.media
+                            td= media
